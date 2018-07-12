@@ -11,12 +11,12 @@ import org.jfree.ui.ApplicationFrame;
 public class LineChart_AWT extends ApplicationFrame {
     DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
 
-    public LineChart_AWT( String applicationTitle , String chartTitle ) {
+    LineChart_AWT(String applicationTitle, String chartTitle) {
         super(applicationTitle);
         JFreeChart lineChart = ChartFactory.createLineChart(
                 chartTitle,
                 "Number Of Nodes","Average",
-                createDataset(),
+                dataset,
                 PlotOrientation.VERTICAL,
                 true,true,false);
 
@@ -25,11 +25,7 @@ public class LineChart_AWT extends ApplicationFrame {
         setContentPane( chartPanel );
     }
 
-    private DefaultCategoryDataset createDataset( ) {
-        return dataset;
-    }
-
-    public void addData(double value, String rowKey, String columnKey){
+    void addData(double value, String rowKey, String columnKey){
         dataset.addValue(value, rowKey, columnKey);
     }
 }
