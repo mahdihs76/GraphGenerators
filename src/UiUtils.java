@@ -48,6 +48,7 @@ public class UiUtils {
         if (addButton != null) {
             vBox.getChildren().addAll(addButton);
         }
+        vBox.setStyle("-fx-background-color: black");
         vBox.setPadding(new Insets(0, 0, 20, 0));
         vBox.setVisible(false);
         vBox.setManaged(false);
@@ -81,8 +82,8 @@ public class UiUtils {
     static void setupStage(Stage primaryStage) {
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setTitle("Graph Models");
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(Screen.getPrimary().getBounds().getHeight());
+        primaryStage.setWidth(500);
+        primaryStage.setHeight(500);
         primaryStage.setResizable(false);
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setX(0);

@@ -1,3 +1,5 @@
+import charts.AverageDistanceChart;
+import charts.DegreeDistributionChart;
 import generators.MediationDrivenAttachmentGenerator;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -30,12 +32,12 @@ public class Main extends Application {
     private Graph barabasiGraph;
     private Graph wattsGraph;
     private Graph drivenGraph;
-    private LineChart_AWT barabasiAverageChart;
-    private LineChart_AWT wattsAverageChart;
-    private LineChart_AWT drivenAverageChart;
-    private BarChart_AWT barabasiDegreeChart;
-    private BarChart_AWT wattsDegreeChart;
-    private BarChart_AWT drivenDegreeChart;
+    private AverageDistanceChart barabasiAverageChart;
+    private AverageDistanceChart wattsAverageChart;
+    private AverageDistanceChart drivenAverageChart;
+    private DegreeDistributionChart barabasiDegreeChart;
+    private DegreeDistributionChart wattsDegreeChart;
+    private DegreeDistributionChart drivenDegreeChart;
     private VBox barabasiDataVBox;
     private VBox wattsDataVBox;
     private VBox drivenDataVBox;
@@ -49,7 +51,7 @@ public class Main extends Application {
         VBox drivenGroup = initMediationGroup();
 
         VBox mainGroup = new VBox(barabasiGroup, wattsGroup, drivenGroup);
-        mainGroup.setStyle("-fx-background-color: black");
+        mainGroup.setStyle("-fx-background-color: lawngreen");
 
         Scene scene = new Scene(mainGroup);
         primaryStage.setScene(scene);
@@ -118,7 +120,7 @@ public class Main extends Application {
 
         Button addButton = new Button("Next Step");
         addButton.setTranslateX(20);
-        addButton.setMinWidth(360);
+        addButton.setMinWidth(460);
         addButton.setMinHeight(50);
         addButton.setStyle(
                 "-fx-background-color: white;" +
@@ -169,7 +171,7 @@ public class Main extends Application {
 
         Button addButton = new Button("Next Step");
         addButton.setTranslateX(20);
-        addButton.setMinWidth(360);
+        addButton.setMinWidth(460);
         addButton.setMinHeight(50);
         addButton.setStyle(
                 "-fx-background-color: white;" +
@@ -210,7 +212,7 @@ public class Main extends Application {
         setDataToCharts(drivenGraph, drivenAverageChart, drivenDegreeChart);
     }
 
-    private void setDataToCharts(Graph graph, LineChart_AWT avgChart, BarChart_AWT degreeChart) {
+    private void setDataToCharts(Graph graph, AverageDistanceChart avgChart, DegreeDistributionChart degreeChart) {
         int nodeCount = graph.getNodeCount();
 //        numOfNodes.setText("Number Of Nodes: " + nodeCount);
         APSP apsp = new APSP();
@@ -232,7 +234,7 @@ public class Main extends Application {
         }
         String avg = String.format("%.2f", (float) sum / count);
 //        averageDistance.setText("Average Distance Between Nodes: " + avg);
-        avgChart.addData(Double.parseDouble(avg), "Average", String.valueOf(nodeCount));
+        avgChart.addData(Double.parseDouble(avg), String.valueOf(nodeCount));
         degreeChart.setData(Toolkit.degreeDistribution(graph));
     }
 
@@ -290,15 +292,15 @@ public class Main extends Application {
     }
 
     private void drawAverageChart(GraphModel model) {
-        LineChart_AWT avgChart;
+        AverageDistanceChart avgChart;
         if (model == GraphModel.BARABASI_ALBERT) {
-            barabasiAverageChart = new LineChart_AWT(model.getText(), "Average Distance Between Nodes");
+            barabasiAverageChart = new AverageDistanceChart(model.getText(), "Average Distance Between Nodes");
             avgChart = barabasiAverageChart;
         } else if (model == GraphModel.WATTS_STROGATZ){
-            wattsAverageChart = new LineChart_AWT(model.getText(), "Average Distance Between Nodes");
+            wattsAverageChart = new AverageDistanceChart(model.getText(), "Average Distance Between Nodes");
             avgChart = wattsAverageChart;
         } else {
-            drivenAverageChart = new LineChart_AWT(model.getText(), "Average Distance Between Nodes");
+            drivenAverageChart = new AverageDistanceChart(model.getText(), "Average Distance Between Nodes");
             avgChart = drivenAverageChart;
         }
         avgChart.pack();
@@ -307,15 +309,15 @@ public class Main extends Application {
     }
 
     private void drawDegreeChart(GraphModel model) {
-        BarChart_AWT barChart;
+        DegreeDistributionChart barChart;
         if (model == GraphModel.BARABASI_ALBERT) {
-            barabasiDegreeChart = new BarChart_AWT(model.getText(), "Degree Distribution");
+            barabasiDegreeChart = new DegreeDistributionChart(model.getText(), "Degree Distribution");
             barChart = barabasiDegreeChart;
         } else if (model == GraphModel.WATTS_STROGATZ){
-            wattsDegreeChart = new BarChart_AWT(model.getText(), "Degree Distribution");
+            wattsDegreeChart = new DegreeDistributionChart(model.getText(), "Degree Distribution");
             barChart = wattsDegreeChart;
         } else {
-            drivenDegreeChart = new BarChart_AWT(model.getText(), "Degree Distribution");
+            drivenDegreeChart = new DegreeDistributionChart(model.getText(), "Degree Distribution");
             barChart = drivenDegreeChart;
         }
         barChart.pack();

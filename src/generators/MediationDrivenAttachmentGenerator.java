@@ -31,63 +31,16 @@
  */
 package generators;
 
+import org.graphstream.algorithm.Toolkit;
 import org.graphstream.algorithm.generator.BaseGenerator;
+import org.graphstream.graph.Node;
+import org.util.set.Array;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Scale-free graph generator using the preferential attachment rule as defined
- * in the Barabási-Albert model.
- * 
- * <p>
- * This is a very simple graph generator that generates a graph using the
- * preferential attachment rule defined in the Barabási-Albert model: nodes are
- * generated one by one, and each time attached by one or more edges other
- * nodes. The other nodes are chosen using a biased random selection giving more
- * chance to a node if it has a high degree.
- * </p>
- * 
- * <h2>Usage</h2>
- * 
- * <p>
- * The more this generator is iterated, the more nodes are generated. It can
- * therefore generate graphs of any size. One node is generated at each call to
- * {@link #nextEvents()}. At each node added at least one new edge is added. The
- * number of edges added at each step is given by the
- * {@link #getMaxLinksPerStep()}. However by default the generator creates a
- * number of edges per new node chosen randomly between 1 and
- * {@link #getMaxLinksPerStep()}. To have exactly this number of edges at each
- * new node, use {@link #setExactlyMaxLinksPerStep(boolean)}.
- * </p>
- * 
- * <h2>Complexity</h2>
- * 
- * For each new step, the algorithm act in O(n) with n the number of
- * nodes if 1 max edge per new node is created, else the complexity
- * is O(nm) if m max edge per new node is created.
- * 
- * <h2>Example</h2>
- * 
- * <pre>
- * Graph graph = new SingleGraph("Barabàsi-Albert");
- * // Between 1 and 3 new links per node added.
- * Generator gen = new MediationDrivenAttachmentGenerator(3);
- * // Generate 100 nodes:
- * gen.addSink(graph); 
- * gen.begin();
- * for(int i=0; i<100; i++) {
- * 		gen.nextEvents();
- * }
- * gen.end();
- * graph.display();
- * </pre>
- * 
- * @reference Albert-László Barabási & Réka Albert
- *            "Emergence of scaling in random networks", Science 286: 509–512.
- *            October 1999. doi:10.1126/science.286.5439.509.
- */
 public class MediationDrivenAttachmentGenerator extends BaseGenerator {
 	/**
 	 * Degree of each node.
@@ -251,8 +204,22 @@ public class MediationDrivenAttachmentGenerator extends BaseGenerator {
 			i++;
 		}
 		i--;
-		connected.add(i);
-		sumDegRemaining -= degrees.get(i);
+		ArrayList<Node> neighbours = new ArrayList<>();
+		if (internalGraph != null) {
+			Node rNode = internalGraph.getNode(i);
+			Iterator<Node> iterator = rNode.getNeighborNodeIterator();
+			while (iterator.hasNext()) {
+				neighbours.add(iterator.next());
+			}
+			int winner = random.nextInt(neighbours.size());
+			Node node = internalGraph.getNode(winner);
+			int degree = node.getDegree();
+			connected.add(node.getIndex());
+			sumDegRemaining -= degree;
+		} else {
+			connected.add(i);
+			sumDegRemaining -= degrees.get(i);
+		}
 	}
 
 

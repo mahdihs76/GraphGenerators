@@ -9,7 +9,7 @@ public enum GraphModel {
     private final String text;
 
     GraphModel(String text) {
-        this.text=text;
+        this.text = text;
     }
 
     public String getText() {
