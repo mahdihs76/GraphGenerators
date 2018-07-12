@@ -87,6 +87,6 @@ public class UiUtils {
         primaryStage.setResizable(false);
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setX(0);
-        primaryStage.setY(0);
+        primaryStage.setY(Screen.getPrimary().getBounds().getMaxY());
     }
 }

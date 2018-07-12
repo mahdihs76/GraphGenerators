@@ -41,6 +41,7 @@ public class Main extends Application {
     private VBox barabasiDataVBox;
     private VBox wattsDataVBox;
     private VBox drivenDataVBox;
+    private boolean alertShown = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -201,18 +202,18 @@ public class Main extends Application {
     }
 
     private void setDataToBarabasiCharts() {
-        setDataToCharts(barabasiGraph, barabasiAverageChart, barabasiDegreeChart);
+        setDataToCharts(GraphModel.BARABASI_ALBERT, barabasiGraph, barabasiAverageChart, barabasiDegreeChart);
     }
 
     private void setDataToWattsCharts() {
-        setDataToCharts(wattsGraph, wattsAverageChart, wattsDegreeChart);
+        setDataToCharts(GraphModel.WATTS_STROGATZ, wattsGraph, wattsAverageChart, wattsDegreeChart);
     }
 
     private void setDataToDrivenCharts() {
-        setDataToCharts(drivenGraph, drivenAverageChart, drivenDegreeChart);
+        setDataToCharts(GraphModel.MEDIATION_DRIVEN, drivenGraph, drivenAverageChart, drivenDegreeChart);
     }
 
-    private void setDataToCharts(Graph graph, AverageDistanceChart avgChart, DegreeDistributionChart degreeChart) {
+    private void setDataToCharts(GraphModel model, Graph graph, AverageDistanceChart avgChart, DegreeDistributionChart degreeChart) {
         int nodeCount = graph.getNodeCount();
 //        numOfNodes.setText("Number Of Nodes: " + nodeCount);
         APSP apsp = new APSP();
@@ -234,7 +235,14 @@ public class Main extends Application {
         }
         String avg = String.format("%.2f", (float) sum / count);
 //        averageDistance.setText("Average Distance Between Nodes: " + avg);
-        avgChart.addData(Double.parseDouble(avg), String.valueOf(nodeCount));
+        if (model != GraphModel.WATTS_STROGATZ) {
+            avgChart.addData(Double.parseDouble(avg), String.valueOf(nodeCount));
+        } else {
+            if (!alertShown) {
+                new Alert(Alert.AlertType.INFORMATION, "Average Distance Between Nodes: " + avg).show();
+                alertShown = true;
+            }
+        }
         degreeChart.setData(Toolkit.degreeDistribution(graph));
     }
 
@@ -243,7 +251,9 @@ public class Main extends Application {
     }
 
     private void nextDrivenGraphStep() {
-        drivenGenerator.nextEvents();
+        for (int i = 0; i < 10; i++) {
+            drivenGenerator.nextEvents();
+        }
     }
 
     private void drawBarabasiGraph(int m) {
@@ -271,10 +281,11 @@ public class Main extends Application {
     }
 
     private void drawWattsGraph(int n, int k, double beta) {
+        alertShown = false;
         wattsGraph = new SingleGraph("Watts-Strogatz");
         try {
             wattsGenerator = new WattsStrogatzGenerator(n, k, beta);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.show();
         }
@@ -286,7 +297,7 @@ public class Main extends Application {
         wattsGenerator.end();
         Viewer display = wattsGraph.display();
         display.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
-        drawAverageChart(GraphModel.WATTS_STROGATZ);
+//        drawAverageChart(GraphModel.WATTS_STROGATZ);
         drawDegreeChart(GraphModel.WATTS_STROGATZ);
         setDataToWattsCharts();
     }
@@ -296,7 +307,7 @@ public class Main extends Application {
         if (model == GraphModel.BARABASI_ALBERT) {
             barabasiAverageChart = new AverageDistanceChart(model.getText(), "Average Distance Between Nodes");
             avgChart = barabasiAverageChart;
-        } else if (model == GraphModel.WATTS_STROGATZ){
+        } else if (model == GraphModel.WATTS_STROGATZ) {
             wattsAverageChart = new AverageDistanceChart(model.getText(), "Average Distance Between Nodes");
             avgChart = wattsAverageChart;
         } else {
@@ -313,7 +324,7 @@ public class Main extends Application {
         if (model == GraphModel.BARABASI_ALBERT) {
             barabasiDegreeChart = new DegreeDistributionChart(model.getText(), "Degree Distribution");
             barChart = barabasiDegreeChart;
-        } else if (model == GraphModel.WATTS_STROGATZ){
+        } else if (model == GraphModel.WATTS_STROGATZ) {
             wattsDegreeChart = new DegreeDistributionChart(model.getText(), "Degree Distribution");
             barChart = wattsDegreeChart;
         } else {
